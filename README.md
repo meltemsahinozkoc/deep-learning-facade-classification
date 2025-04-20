@@ -19,10 +19,10 @@ Automatically classify exterior cladding types—such as **Brick**, **Concrete**
 
 ## Key Results
 
-| Model       | Dataset     | Test Acc. | F1 Score | Scotland Acc. |
-|-------------|-------------|-----------|----------|----------------|
-| ResNet50    | Augmented   |   68.2%   |   61.0%  |   29.6%        |
-| InceptionV3 | Augmented   | **70.4%** | **67.1%**| **38.0%**      |
+| Model       | Dataset     | Test Acc. | 
+|-------------|-------------|-----------|
+| ResNet50    | Augmented   |   68.2%   | 
+| InceptionV3 | Augmented   | **70.4%** |
 
 ## Notebooks
 
