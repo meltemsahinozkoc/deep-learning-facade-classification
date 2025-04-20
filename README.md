@@ -21,7 +21,7 @@ Automatically classify exterior cladding types—such as **Brick**, **Concrete**
 
 | Model       | Dataset     | Test Acc. | F1 Score | Scotland Acc. |
 |-------------|-------------|-----------|----------|----------------|
-| ResNet50    | Unaugmented | 63.4%     | 61.0%    | 29.6%          |
+| ResNet50    | Augmented   |   68.2%   |   61.0%  |   29.6%        |
 | InceptionV3 | Augmented   | **70.4%** | **67.1%**| **38.0%**      |
 
 ## Notebooks
@@ -35,7 +35,7 @@ Automatically classify exterior cladding types—such as **Brick**, **Concrete**
 - Try **Vision Transformers (ViT)** or **Swin Transformers** [Liu et al., 2025](https://doi.org/10.1016/j.enbuild.2025.115457)
 - Work on domain adaptation.
 
-## 🛠Requirements
+## Requirements
 
 Python 3.9 · TensorFlow · NumPy · Matplotlib · scikit-learn · seaborn  
 (Optimized for Apple Silicon with `tensorflow-metal`) - 1 GPU
