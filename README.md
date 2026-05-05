@@ -1,44 +1,64 @@
-# Deep Learning for Building Exterior Cladding Classification Using Pre-trained CNNs
+# Building Façade Classification
 
-This project applies **transfer learning** using **ResNet50** and **InceptionV3** to classify **building façade cladding materials** from labeled Google SVIs. 
+Transfer-learning benchmark on the [Wang et al. 2024 façade dataset](https://doi.org/10.1016/j.dib.2024.110885), comparing four ImageNet-pretrained backbones (CNN + ViT) on two classification tasks.
 
-## Objective
+## Tasks
 
-Automatically classify exterior cladding types—such as **Brick**, **Concrete**, **Curtain-Wall**, **Mixed**, **Others**, and **Stone**—to support scalable building stock analysis for energy and urban modeling.
+| Task | Classes | Train / Val / Test |
+|---|---|---|
+| **Cladding material** (London → Scotland cross-domain) | Brick, Concrete, Curtain-Wall, Mixed, Others, Stone | 928 / 308 / 314 (+ 208 Scotland) |
+| **Number of stories** | 1F, 2F, 3F, 4F, 5F+, Others | 418 / 138 / 144 |
 
-## Dataset
+## Backbones
 
-- Source: [Wang et al., 2024 – Building Façade Dataset](https://doi.org/10.1016/j.dib.2024.110885)
-- Cities: **London** (for training) and **Scotland** (for generalization testing)
-- Format: Image folders with class-wise subdirectories
+ResNet50, EfficientNetV2-S, ConvNeXt-Tiny, ViT-B/16 — all from `timm`, fine-tuned with the same protocol:
 
-## Models
+1. Head-only training (5 epochs, AdamW, cosine schedule)
+2. Full unfreeze fine-tune (15 epochs, lower LR)
+3. Class-weighted cross-entropy, on-the-fly augmentation, mixed precision (CUDA), best-checkpoint by val accuracy
 
-- **ResNet50** and **InceptionV3** with frozen base layers and custom dense heads
-- Trained separately on **unaugmented** and **augmented** datasets
+## Results
 
-## Key Results
+Run `notebooks/02_results.ipynb` to regenerate the table from `results/*.json`.
 
-| Model       | Dataset     | Test Acc. | 
-|-------------|-------------|-----------|
-| ResNet50    | Augmented   |   68.2%   | 
-| InceptionV3 | Augmented   | **70.4%** |
+<!-- TABLE: filled in after training -->
 
-## Notebooks
+## Setup
 
-- `final_project_unaugmented.ipynb`
-- `final_project_augmented.ipynb`
+```bash
+pip install -r requirements.txt
+```
 
-## Next Steps
+Place the dataset under `data/Building_characteristics/` (default — override with `DATA_ROOT=...`). Folder layout follows the Wang et al. release.
 
-- Fine-tune base layers
-- Try **Vision Transformers (ViT)** or **Swin Transformers** [Liu et al., 2025](https://doi.org/10.1016/j.enbuild.2025.115457)
-- Work on domain adaptation.
+## Usage
 
-## Requirements
+```bash
+# train one (task, backbone) pair
+python -m src.cli train --task cladding --model vit_b16
 
-Python 3.9 · TensorFlow · NumPy · Matplotlib · scikit-learn · seaborn  
-(Optimized for Apple Silicon with `tensorflow-metal`) - 1 GPU
+# train everything
+python scripts/run_all.py
+```
 
+Per-run artifacts:
+- `models/<task>_<model>.pt` — best checkpoint (gitignored)
+- `results/<task>_<model>.json` — metrics + history
+- `results/<task>_<model>_<split>_cm.png` — confusion matrix
 
-© 2025 Meltem Sahin Ozkoc – Carnegie Mellon University
+## Layout
+
+```
+src/        config, data, models, train, evaluate, cli
+notebooks/  01_data_exploration, 02_results
+scripts/    run_all.py
+results/    per-run JSON + plots
+```
+
+## Hardware
+
+Tested on RTX 2060 (6 GB) with mixed precision; all 8 runs complete in ~1–1.5 hours. Auto-detects `cuda` / `mps` / `cpu`.
+
+## Reference
+
+Wang, Y., Zhao, X. et al. *Building façade dataset for visual analysis.* Data in Brief, 2024.
